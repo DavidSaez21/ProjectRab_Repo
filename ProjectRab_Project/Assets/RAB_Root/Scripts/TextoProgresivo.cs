@@ -5,23 +5,30 @@ using System.Collections;
 public class TextoProgresivo : MonoBehaviour
 {
     public float delay = 0.05f; // Tiempo entre letras
-    public string fullText;     // El texto completo que quieres mostrar
-    private string currentText = "";
-    private TMP_Text textMeshPro; // Referencia al componente TextMeshPro
+    public TMP_Text textMeshPro;
+
+    [TextArea(3, 10)]
+    public string[] textos; // Lista de textos que aparecerán uno tras otro
 
     void Start()
     {
         textMeshPro = GetComponent<TMP_Text>();
-        StartCoroutine(ShowText());
+        StartCoroutine(MostrarTextos());
     }
 
-    IEnumerator ShowText()
+    IEnumerator MostrarTextos()
     {
-        for (int i = 0; i <= fullText.Length; i++)
+        foreach (string fullText in textos)
         {
-            currentText = fullText.Substring(0, i);
-            textMeshPro.text = currentText;
-            yield return new WaitForSeconds(delay);
+            textMeshPro.text = "";
+            for (int i = 0; i <= fullText.Length; i++)
+            {
+                textMeshPro.text = fullText.Substring(0, i);
+                yield return new WaitForSeconds(delay);
+            }
+
+            // Espera hasta que el jugador presione cualquier tecla
+            yield return new WaitForSeconds(2f);
         }
     }
 }

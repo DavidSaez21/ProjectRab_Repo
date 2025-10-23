@@ -28,7 +28,7 @@ public class TextoProgresivo : MonoBehaviour
             }
 
             // Espera hasta que el jugador presione cualquier tecla
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(25f);
         }
     }
 }

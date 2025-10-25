@@ -1,34 +1,59 @@
-using TMPro;
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using TMPro;
 
-public class TextoProgresivo : MonoBehaviour
+public class Texto : MonoBehaviour
 {
-    public float delay = 0.05f; // Tiempo entre letras
-    public TMP_Text textMeshPro;
+    [Header("Configuración")]
+    public float tiempoEntreLetras = 0.05f; // Velocidad de escritura
+    public TextMeshProUGUI textMeshProUGUI; // Referencia al componente de texto
+    public string[] textos; // Lista de textos a mostrar
 
-    [TextArea(3, 10)]
-    public string[] textos; // Lista de textos que aparecerán uno tras otro
+    private int textoIndex = 0;
+    private bool escribiendo = false;
+    private bool textoTerminado = false;
 
     void Start()
     {
-        textMeshPro = GetComponent<TMP_Text>();
-        StartCoroutine(MostrarTextos());
+        textMeshProUGUI.text = "";
+        StartCoroutine(MostrarTexto());
     }
 
-    IEnumerator MostrarTextos()
+    void Update()
     {
-        foreach (string fullText in textos)
+        // Solo avanza si el texto terminó y se hace clic izquierdo
+        if (textoTerminado && Input.GetMouseButtonDown(0))
         {
-            textMeshPro.text = "";
-            for (int i = 0; i <= fullText.Length; i++)
-            {
-                textMeshPro.text = fullText.Substring(0, i);
-                yield return new WaitForSeconds(delay);
-            }
+            textoTerminado = false;
+            textMeshProUGUI.text = "";
 
-            // Espera hasta que el jugador presione cualquier tecla
-            yield return new WaitForSeconds(25f);
+            if (textoIndex < textos.Length)
+            {
+                StartCoroutine(MostrarTexto());
+            }
+            else
+            {
+                // Si ya no hay más textos, puedes ocultar el texto o hacer otra acción
+                textMeshProUGUI.text = "";
+                Debug.Log("Fin de los textos.");
+            }
         }
+    }
+
+    IEnumerator MostrarTexto()
+    {
+        escribiendo = true;
+        string textoActual = textos[textoIndex];
+        textMeshProUGUI.text = "";
+
+        foreach (char letra in textoActual)
+        {
+            textMeshProUGUI.text += letra;
+            yield return new WaitForSeconds(tiempoEntreLetras);
+        }
+
+        escribiendo = false;
+        textoTerminado = true;
+        textoIndex++;
     }
 }

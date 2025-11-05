@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -13,11 +13,9 @@ public class ShopItem : MonoBehaviour
     public enum ItemType { Sword, Shield, Cape, Helmet }
     public ItemType itemType;
 
-    public TMP_Text usingText; // Si es TextMeshPro
+    public TMP_Text usingText;
 
-
-
-    private bool isPurchased = false;
+    public bool isPurchased = false; // ← Ahora es pública
     private bool isEquipped = false;
 
     public void Initialize()
@@ -30,7 +28,7 @@ public class ShopItem : MonoBehaviour
     {
         if (!isPurchased)
         {
-            if (ShopManager.Instance.TryPurchaseItem(price))
+            if (ShopManager.Instance.TryPurchaseItem(itemName, price))
             {
                 isPurchased = true;
                 UpdateUI();
@@ -49,9 +47,6 @@ public class ShopItem : MonoBehaviour
         UpdateUI();
     }
 
-
-
-
     public void UpdateUI()
     {
         tickIcon.SetActive(isPurchased);
@@ -64,5 +59,5 @@ public class ShopItem : MonoBehaviour
         if (usingText != null)
             usingText.gameObject.SetActive(equipped);
     }
-
 }
+

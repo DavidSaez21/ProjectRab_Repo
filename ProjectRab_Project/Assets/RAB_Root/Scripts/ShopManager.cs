@@ -8,8 +8,40 @@ public class ShopManager : MonoBehaviour
 
     public int playerCoins = 100;
     public List<ShopItem> shopItems;
-
     public TMP_Text coinText;
+
+    public CosmeticController cosmeticController; // Asignar en el Inspector
+
+
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    void Start()
+
+    {
+        UpdateCoinUI();
+
+        foreach (var item in shopItems)
+        {
+            item.Initialize();
+
+            // Marcar como comprado si ya lo está
+            if (PlayerPrefs.GetInt(item.itemName + "_Comprado", 0) == 1)
+            {
+                item.isPurchased = true;
+            }
+
+            // Marcar como equipado si coincide con lo guardado
+            string equipped = PlayerPrefs.GetString("Cosmetico" + item.itemType.ToString(), "");
+            item.SetEquipped(item.itemName == equipped);
+        }
+
+    }
+
+
 
     public void UpdateCoinUI()
     {
@@ -17,60 +49,26 @@ public class ShopManager : MonoBehaviour
             coinText.text = $"{playerCoins}";
     }
 
-
-    private string equippedItem = "";
-
-    void Awake()
-    {
-        Instance = this;
-    }
-
-
-
-    void Start()
-    {
-        foreach (var item in shopItems)
-        {
-            item.Initialize();
-        }
-        {
-            UpdateCoinUI();
-
-            foreach (var item in shopItems)
-            {
-                item.Initialize();
-            }
-        }
-
-    }
-
-
-
-
-
-    public bool TryPurchaseItem(int price)
+    public bool TryPurchaseItem(string itemName, int price)
     {
         if (playerCoins >= price)
         {
             playerCoins -= price;
-            UpdateCoinUI(); // Asegúrate de tener esta función definida
+            PlayerPrefs.SetInt(itemName + "_Comprado", 1);
+            PlayerPrefs.Save();
+            UpdateCoinUI();
             return true;
         }
         return false;
     }
 
-
-    public void EquipItem(string itemName)
-    {
-        equippedItem = itemName;
-        foreach (var item in shopItems)
-        {
-            item.SetEquipped(item.itemName == itemName);
-        }
-        Debug.Log($"Equipped: {itemName}");
-    }
     public void EquipItem(string itemName, ShopItem.ItemType type)
     {
+        // Guardar en PlayerPrefs
+        PlayerPrefs.SetString("Cosmetico" + type.ToString(), itemName);
+        PlayerPrefs.Save();
+
+        // Actualizar visualmente en la tienda
         foreach (var item in shopItems)
         {
             if (item.itemType == type)
@@ -78,6 +76,14 @@ public class ShopManager : MonoBehaviour
                 item.SetEquipped(item.itemName == itemName);
             }
         }
-    }
 
+        // Activar el objeto en el personaje
+        if (cosmeticController != null)
+        {
+            cosmeticController.ActualizarCosmetico(type.ToString(), itemName);
+        }
+
+        Debug.Log($"Equipado: {itemName} en slot {type}");
+    }
 }
+

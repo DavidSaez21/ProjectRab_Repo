@@ -6,12 +6,13 @@ public class Moneda : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        PlayerMonedas jugador = other.GetComponent<PlayerMonedas>();
-        if (jugador != null)
+        if (other.CompareTag("Player"))
         {
-            jugador.AñadirMoneda(valor);
+            if (ShopManager.Instance != null)
+            {
+                ShopManager.Instance.AñadirMonedas(valor);
+            }
             Destroy(gameObject);
         }
     }
 }
-

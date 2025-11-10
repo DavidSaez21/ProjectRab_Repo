@@ -10,7 +10,7 @@ public class ShopItem : MonoBehaviour
     public TMP_Text buttonText;
     public GameObject tickIcon;
 
-    public enum ItemType { Sword, Shield, Cape, Helmet }
+    public enum ItemType { espadas, escudos, capas, cascos }
     public ItemType itemType;
 
     public TMP_Text usingText;

@@ -21,9 +21,11 @@ public class ShopManager : MonoBehaviour
 
     void Start()
     {
-        playerCoins = PlayerPrefs.GetInt("Monedas", 0); // Cargar monedas guardadas
+        // Cargar monedas guardadas
+        playerCoins = PlayerPrefs.GetInt("Monedas", 0);
         UpdateCoinUI();
 
+        // Inicializar items de la tienda
         foreach (var item in shopItems)
         {
             item.Initialize();
@@ -40,8 +42,16 @@ public class ShopManager : MonoBehaviour
 
     public void UpdateCoinUI()
     {
+        // Actualizar texto de la tienda
         if (coinText != null)
             coinText.text = $"{playerCoins}";
+
+        // Actualizar texto del PlayerMonedas si existe
+        PlayerMonedas playerMonedas = FindObjectOfType<PlayerMonedas>();
+        if (playerMonedas != null)
+        {
+            playerMonedas.ActualizarUI();
+        }
     }
 
     public void AñadirMonedas(int cantidad)
@@ -89,4 +99,3 @@ public class ShopManager : MonoBehaviour
         Debug.Log($"Equipado: {itemName} en slot {type}");
     }
 }
-

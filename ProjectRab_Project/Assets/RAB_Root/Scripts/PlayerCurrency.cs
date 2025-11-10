@@ -3,12 +3,18 @@ using UnityEngine.UI;
 
 public class PlayerMonedas : MonoBehaviour
 {
-    public int monedas = 0;
     public Text textoMonedas; // Asigna el Text desde el Inspector
 
-    public void AñadirMoneda(int cantidad)
+    void Start()
     {
-        monedas += cantidad;
-        textoMonedas.text = "Monedas: " + monedas;
+        ActualizarUI();
+    }
+
+    public void ActualizarUI()
+    {
+        if (ShopManager.Instance != null)
+        {
+            textoMonedas.text = "Monedas: " + ShopManager.Instance.PlayerCoins;
+        }
     }
 }

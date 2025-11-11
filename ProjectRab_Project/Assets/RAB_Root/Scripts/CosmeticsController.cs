@@ -11,10 +11,12 @@ public class CosmeticController : MonoBehaviour
     public void ActualizarCosmetico(string tipo, string nombre)
     {
         List<GameObject> lista = ObtenerListaPorTipo(tipo);
-
+        Debug.Log($"ActualizarCosmetico tipo={tipo} nombre={nombre} listaCount={lista.Count}");
         foreach (GameObject obj in lista)
         {
-            obj.SetActive(obj.name == nombre);
+            bool match = (obj.name == nombre);
+            obj.SetActive(match);
+            if (match) Debug.Log("Activado: " + obj.name);
         }
     }
 
@@ -50,9 +52,6 @@ public class CosmeticController : MonoBehaviour
     void DesactivarLista(List<GameObject> lista)
     {
         foreach (GameObject obj in lista)
-        {
             obj.SetActive(false);
-        }
     }
-
 }

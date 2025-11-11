@@ -15,23 +15,81 @@ public class ShopItem : MonoBehaviour
 
     public TMP_Text usingText;
 
-    public bool isPurchased = false; // ← Ahora es pública
+    public bool isPurchased = false;
     private bool isEquipped = false;
+
+    bool isInitialized = false;
 
     public void Initialize()
     {
+        if (isInitialized) return;
+        isInitialized = true;
+
         UpdateUI();
-        actionButton.onClick.AddListener(OnButtonClick);
+
+        if (actionButton != null)
+        {
+            actionButton.onClick.AddListener(OnButtonClick);
+        }
+        else
+        {
+            Debug.LogWarning($"ActionButton no asignado en {name}");
+        }
+
+        Debug.Log($"UpdateUI en {name} | isPurchased={isPurchased} | isEquipped={isEquipped} | tickIconAssigned={(tickIcon != null)}");
+
+        if (tickIcon != null)
+        {
+            tickIcon.SetActive(isPurchased);
+            Debug.Log($"tickIcon activeSelf after set = {tickIcon.activeSelf} (tickIcon path: {GetHierarchyPath(tickIcon.transform)})");
+        }
+
+        if (buttonText != null)
+            buttonText.text = isPurchased ? "Equip" : $"Buy ({price})";
+    }
+
+    string GetHierarchyPath(Transform t)
+    {
+        string path = t.name;
+        while (t.parent != null)
+        {
+            t = t.parent;
+            path = t.name + "/" + path;
+        }
+        return path;
+
+    }
+
+
+
+
+
+    void OnDestroy()
+    {
+        if (actionButton != null)
+            actionButton.onClick.RemoveListener(OnButtonClick);
     }
 
     void OnButtonClick()
     {
+        if (ShopManager.Instance == null)
+        {
+            Debug.LogWarning("ShopManager.Instance es null al intentar comprar/equipar");
+            return;
+        }
+
         if (!isPurchased)
         {
-            if (ShopManager.Instance.TryPurchaseItem(itemName, price))
+            bool bought = ShopManager.Instance.TryPurchaseItem(itemName, price);
+            if (bought)
             {
                 isPurchased = true;
                 UpdateUI();
+            }
+            else
+            {
+                // Opcional: feedback al usuario
+                Debug.Log("No tienes suficientes monedas para " + itemName);
             }
         }
         else
@@ -42,15 +100,45 @@ public class ShopItem : MonoBehaviour
 
     void EquipItem()
     {
+        if (ShopManager.Instance == null) return;
+
         ShopManager.Instance.EquipItem(itemName, itemType);
-        isEquipped = true;
+        // No establecemos isEquipped = true aquí porque SetEquipped será llamado desde ShopManager
+        // pero dejamos esto por compatibilidad en caso de que quieras respuesta instantánea:
+        // isEquipped = true;
         UpdateUI();
     }
 
     public void UpdateUI()
     {
-        tickIcon.SetActive(isPurchased);
-        buttonText.text = isPurchased ? "Equip" : $"Buy ({price})";
+        if (tickIcon != null)
+            tickIcon.SetActive(isPurchased);
+
+        if (usingText != null)
+            usingText.gameObject.SetActive(isEquipped);
+
+        if (buttonText != null && actionButton != null)
+        {
+            if (!isPurchased)
+            {
+                buttonText.text = $"Buy ({price})";
+                actionButton.interactable = true;
+            }
+            else
+            {
+                // Prioriza estado equipado
+                if (isEquipped)
+                {
+                    buttonText.text = "Using";
+                    actionButton.interactable = true;
+                }
+                else
+                {
+                    buttonText.text = "Equip";
+                    actionButton.interactable = true;
+                }
+            }
+        }
     }
 
     public void SetEquipped(bool equipped)
@@ -58,6 +146,8 @@ public class ShopItem : MonoBehaviour
         isEquipped = equipped;
         if (usingText != null)
             usingText.gameObject.SetActive(equipped);
+        Debug.Log($"{itemName} SetEquipped = {equipped}");
+        UpdateUI();
     }
-}
 
+}

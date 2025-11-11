@@ -9,14 +9,20 @@ EditorBuildSettings:
     path: Assets/Scenes/scn.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
+    path: Assets/Scenes/SCN_Intro.unity
+    guid: 47a746fd19797474d88873100cd9ae1c
+  - enabled: 1
     path: Assets/Scenes/SCN_MainMenu.unity
     guid: bafd89a77da94c64480303f9e58d0d24
   - enabled: 1
-    path: Assets/Scenes/SCN_Victory.unity
-    guid: dd759d768f6cc6f469c52681e4f2f139
-  - enabled: 1
     path: Assets/Scenes/SCN_DiegoTest.unity
     guid: a85705763a7e0a44487d8f9c154ae440
+  - enabled: 1
+    path: Assets/Scenes/SCN_DavidTest.unity
+    guid: b4d147e18b46ec542b5c3d1b651bf198
+  - enabled: 1
+    path: Assets/Scenes/SCN_Victory.unity
+    guid: dd759d768f6cc6f469c52681e4f2f139
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

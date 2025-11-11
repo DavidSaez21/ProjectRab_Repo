@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
 public class PlayerController : MonoBehaviour
 {
     [Header("Editor References")]
@@ -21,6 +22,10 @@ public class PlayerController : MonoBehaviour
 
     [Header("Sound Configuration")]
     public AudioClip[] soundCollection;
+
+    [Header("Camera Reference")]
+    public Transform cameraTransform; // Asigna la cámara en el Inspector
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -68,10 +73,23 @@ public class PlayerController : MonoBehaviour
 
     void PhysicalMovement()
     {
-        //Añadir una fuerza al rigidbody = (Dirección * velocidad * input)
-        playerRb.AddForce(Vector3.right * speed * moveInput.x);
-        playerRb.AddForce(Vector3.forward * speed * moveInput.y);
+        // Obtener dirección de la cámara
+        Vector3 camForward = cameraTransform.forward;
+        Vector3 camRight = cameraTransform.right;
+
+        // Ignorar componente vertical
+        camForward.y = 0f;
+        camRight.y = 0f;
+        camForward.Normalize();
+        camRight.Normalize();
+
+        // Calcular dirección de movimiento
+        Vector3 moveDirection = camForward * moveInput.y + camRight * moveInput.x;
+
+        // Aplicar fuerza en esa dirección
+        playerRb.AddForce(moveDirection * speed);
     }
+
 
     void Jump()
     {
@@ -87,6 +105,19 @@ public class PlayerController : MonoBehaviour
         playerRb.linearVelocity = new Vector3(0,0,0);
         PlaySFX(2);
     }
+
+    public Transform cosmeticsContainer;
+
+    void LateUpdate()
+    {
+        // Obtener la rotación Y de la cámara
+        Vector3 cameraEuler = cameraTransform.eulerAngles;
+
+        // Aplicar solo la rotación Y al contenedor
+        cosmeticsContainer.rotation = Quaternion.Euler(0, cameraEuler.y, 0);
+    }
+
+
 
     public void PlaySFX(int soundToPlay)
     {

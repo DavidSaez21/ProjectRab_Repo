@@ -31,6 +31,7 @@ public class MenuManager : MonoBehaviour
         void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
+
             {
                 menuAbierto = !menuAbierto;
                 menuPanel.SetActive(menuAbierto);

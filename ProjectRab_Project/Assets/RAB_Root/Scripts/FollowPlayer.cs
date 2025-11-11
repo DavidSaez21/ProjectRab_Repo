@@ -4,7 +4,7 @@ public class FollowPlayer : MonoBehaviour
 {
     [Header("Follow settings")]
     public Transform target;
-    public Vector3 offset = new Vector3(0, 3, -4);
+    public Vector3 offset = new Vector3(0, 5, -6);
     public float smoothSpeed = 10f;
 
     [Header("Collision settings")]
@@ -58,6 +58,8 @@ public class FollowPlayer : MonoBehaviour
         transform.position = smoothed;
 
         // 5) Mirar al jugador
-        transform.LookAt(target);
+        //transform.LookAt(target);
+        transform.rotation = Quaternion.Euler(30f, 0f, 0f); // Ajusta estos valores según el ángulo que quieras
+
     }
 }

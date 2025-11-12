@@ -28,7 +28,7 @@ public class PlayerMonedas : MonoBehaviour
     public void ActualizarUI(int amount)
     {
         if (textoMonedas != null)
-            textoMonedas.text = "Monedas: " + amount;
+            textoMonedas.text = "" + amount;
     }
 }
 

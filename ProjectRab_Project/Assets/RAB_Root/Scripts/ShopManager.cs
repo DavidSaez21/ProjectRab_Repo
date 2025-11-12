@@ -23,26 +23,49 @@ public class ShopManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
-        // Uncomment if quieres que el ShopManager sobreviva entre escenas
-        // DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(gameObject); // Mantén la instancia entre escenas si lo deseas
+
+        // Cargar monedas en Awake para que estén disponibles inmediatamente
+        playerCoins = PlayerPrefs.GetInt("Monedas", 0);
+        UpdateCoinUI();
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        // Primer arranque por versión: si no existe la marca, inicializa a 0
+        string primeraClave = "HasRun_v" + Application.version;
+        if (PlayerPrefs.GetInt(primeraClave, 0) == 0)
+        {
+            PlayerPrefs.SetInt("Monedas", 0);
+            PlayerPrefs.SetInt(primeraClave, 1);
+            PlayerPrefs.Save();
+            Debug.Log("Primera ejecución de la versión: monedas reiniciadas a 0");
+        }
+
+        // Cargar monedas (ahora ya seguro que será 0 en la primera ejecución)
+        playerCoins = PlayerPrefs.GetInt("Monedas", 0);
+        UpdateCoinUI();
+
     }
 
     void Start()
     {
-        playerCoins = PlayerPrefs.GetInt("Monedas", 0);
-        UpdateCoinUI();
-
-        // Inicializar items y cargar comprado/equipped desde la misma clave consistente
+        // Inicializar items y estados guardados
         foreach (var item in shopItems)
         {
             item.Initialize();
 
-            // comprado
             if (PlayerPrefs.GetInt(item.itemName + "_Comprado", 0) == 1)
                 item.isPurchased = true;
 
-            // Determinar la clave de categoría consistente (misma que EquipItem)
             string categoriaClave = item.itemType switch
             {
                 ShopItem.ItemType.capas => "Capa",
@@ -52,7 +75,6 @@ public class ShopManager : MonoBehaviour
                 _ => ""
             };
 
-            // comprobar qué está equipado en PlayerPrefs usando la misma clave
             if (!string.IsNullOrEmpty(categoriaClave))
             {
                 string equipado = PlayerPrefs.GetString("Cosmetico" + categoriaClave, "");
@@ -60,7 +82,6 @@ public class ShopManager : MonoBehaviour
             }
         }
 
-        // Después de haber marcado los ShopItems, actualizar visuales del personaje
         if (cosmeticController != null)
         {
             cosmeticController.ActualizarCosmetico("Capa", PlayerPrefs.GetString("CosmeticoCapa", ""));
@@ -69,7 +90,6 @@ public class ShopManager : MonoBehaviour
             cosmeticController.ActualizarCosmetico("Espada", PlayerPrefs.GetString("CosmeticoEspada", ""));
         }
     }
-
 
     public void UpdateCoinUI()
     {
@@ -114,18 +134,15 @@ public class ShopManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(categoriaClave)) return;
 
-        // Guardar qué cosmético está equipado
         PlayerPrefs.SetString("Cosmetico" + categoriaClave, itemName);
         PlayerPrefs.Save();
 
-        // Actualizar estado de los ShopItem en memoria
         foreach (var item in shopItems)
         {
             if (item.itemType == type)
                 item.SetEquipped(item.itemName == itemName);
         }
 
-        // Actualizar visuales del personaje
         if (cosmeticController != null)
             cosmeticController.ActualizarCosmetico(categoriaClave, itemName);
 

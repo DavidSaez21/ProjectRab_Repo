@@ -20,7 +20,7 @@ public class MenuManager : MonoBehaviour
     void Update()
     {
         // Alternar menú con Escape
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             ToggleMenu();
         }
